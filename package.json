@@ -1,0 +1,83 @@
+{
+    "name": "cgf.cameracontrol.main.gui",
+    "version": "1.0.0",
+    "description": "Gui Application that allows to control Blackmagicdesign ATEM Switcher and it's associated cameras using e.g. gamepads",
+    "keywords": [
+        "camera",
+        "control"
+    ],
+    "homepage": "https://github.com/sensslen/Cgf.CameraControl.Main.Cli#readme",
+    "bugs": {
+        "url": "https://github.com/sensslen/Cgf.CameraControl.Main.Cli/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sensslen/Cgf.CameraControl.Main.Cli.git"
+    },
+    "license": "MIT",
+    "author": {
+        "name": "Simon Ensslen",
+        "email": "sensslen@gmail.com"
+    },
+    "main": "dist/index.js",
+    "scripts": {
+        "postinstall": "sort-package-json",
+        "prestart": "sort-package-json",
+        "start": "tsc && electron-forge start",
+        "prepackage": "sort-package-json",
+        "package": "electron-forge package",
+        "premake": "sort-package-json",
+        "make": "electron-forge make",
+        "prepublish": "sort-package-json",
+        "publish": "sort-package-json && electron-forge publish",
+        "lint": "eslint --ext .ts ."
+    },
+    "config": {
+        "forge": {
+            "packagerConfig": {},
+            "makers": [
+                {
+                    "name": "@electron-forge/maker-squirrel",
+                    "config": {
+                        "name": "cgf.cameracontrol.main.gui"
+                    }
+                },
+                {
+                    "name": "@electron-forge/maker-zip",
+                    "platforms": [
+                        "darwin"
+                    ]
+                },
+                {
+                    "name": "@electron-forge/maker-deb",
+                    "config": {}
+                },
+                {
+                    "name": "@electron-forge/maker-rpm",
+                    "config": {}
+                }
+            ]
+        }
+    },
+    "dependencies": {
+        "cgf.cameracontrol.main.core": "^1.0.2-beta.10",
+        "cgf.cameracontrol.main.gamepad": "^0.9.1-beta.11",
+        "electron-squirrel-startup": "^1.0.0"
+    },
+    "devDependencies": {
+        "@electron-forge/cli": "^6.0.0-beta.54",
+        "@electron-forge/maker-deb": "^6.0.0-beta.54",
+        "@electron-forge/maker-rpm": "^6.0.0-beta.54",
+        "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
+        "@electron-forge/maker-zip": "^6.0.0-beta.54",
+        "@typescript-eslint/eslint-plugin": "^4.17.0",
+        "@typescript-eslint/parser": "^4.17.0",
+        "electron": "12.0.1",
+        "electron-rebuild": "^2.3.5",
+        "eslint": "^7.22.0",
+        "eslint-plugin-import": "^2.22.1",
+        "sort-package-json": "^1.49.0",
+        "typescript": "^4.2.3"
+    },
+    "productName": "Cgf.CameraControl.Main.Gui"
+}
