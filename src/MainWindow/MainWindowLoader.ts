@@ -1,29 +1,28 @@
 import { Core, ILogger } from 'cgf.cameracontrol.main.core';
 import { Fx10Builder, Rumblepad2Builder } from 'cgf.cameracontrol.main.gamepad';
-import { BrowserWindow, dialog, Menu } from 'electron';
+import { BrowserWindow, dialog, ipcMain, Menu } from 'electron';
+import { IpcChannelConstants } from '../Ipc/IpcChannelConstants';
+import * as path from 'path';
 import * as fs from 'fs';
+import { ILogMessage } from '../Ipc/ILogMessage';
+import { eLogType } from '../Ipc/ILogMessage';
 
 export class MainWindowLoader {
     private mainWindow?: Electron.BrowserWindow;
     private core?: Core;
-    private readonly logger: ILogger = {
-        log(toLog: string): void {
-            console.log(toLog);
-        },
-        error(toLog: string): void {
-            console.error(toLog);
-        },
-    };
 
     constructor() {}
 
-    public createWindow(mainWindowLocation: any) {
+    public createWindow() {
+        const mainWindowLocation = path.join(__dirname, '../../src/MainWindow/index.html');
+        const preloadLocation = path.join(__dirname, 'preload/preload.js');
         // Create the browser window.
         this.mainWindow = new BrowserWindow({
             height: 600,
             width: 800,
             webPreferences: {
                 contextIsolation: true,
+                preload: preloadLocation,
             },
         });
 
@@ -39,6 +38,13 @@ export class MainWindowLoader {
         });
 
         this.mainWindow.setMenu(this.createMenu());
+        this.registerForUiEvents();
+
+        setTimeout(() => this.sendLogToGui(eLogType.Error, 'test'), 200);
+    }
+
+    private registerForUiEvents() {
+        ipcMain.on(IpcChannelConstants.LoadConfiguration, () => this.showLoadConfigDialog());
     }
 
     private createMenu(): Menu {
@@ -86,10 +92,24 @@ export class MainWindowLoader {
 
         this.core = new Core();
 
-        this.core.HmiFactory.builderAdd(new Fx10Builder(this.logger, this.core.MixerFactory));
-        this.core.HmiFactory.builderAdd(new Rumblepad2Builder(this.logger, this.core.MixerFactory));
+        const logger: ILogger = {
+            log: (message: string) => this.sendLogToGui(eLogType.Info, message),
+            error: (message: string) => this.sendLogToGui(eLogType.Error, message),
+        };
+
+        this.core.HmiFactory.builderAdd(new Fx10Builder(logger, this.core.MixerFactory));
+        this.core.HmiFactory.builderAdd(new Rumblepad2Builder(logger, this.core.MixerFactory));
 
         const config = JSON.parse(fs.readFileSync(filepath).toString());
-        this.core.bootstrap(this.logger, config);
+        this.core.bootstrap(logger, config);
+    }
+
+    private sendLogToGui(type: eLogType, message: string) {
+        const m: ILogMessage = { type: type, message: message };
+        this.sendToGui(IpcChannelConstants.Log, m);
+    }
+
+    private sendToGui<TMessage>(channel: string, message: TMessage) {
+        this.mainWindow?.webContents.send(channel, message);
     }
 }

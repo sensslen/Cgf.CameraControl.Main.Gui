@@ -1,6 +1,5 @@
 import { app, BrowserWindow } from 'electron';
-import * as path from 'path';
-import { MainWindowLoader } from './MainWindowLoader';
+import { MainWindowLoader } from './MainWindow/MainWindowLoader';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -10,7 +9,7 @@ if (require('electron-squirrel-startup')) {
 
 const createWindow = (): void => {
     const mainWindow = new MainWindowLoader();
-    mainWindow.createWindow(path.join(__dirname, '../src/index.html'));
+    mainWindow.createWindow();
 };
 
 // This method will be called when Electron has finished

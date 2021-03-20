@@ -19,7 +19,7 @@
         "name": "Simon Ensslen",
         "email": "sensslen@gmail.com"
     },
-    "main": "dist/index.js",
+    "main": "dist/main.js",
     "scripts": {
         "postinstall": "sort-package-json",
         "prestart": "sort-package-json",

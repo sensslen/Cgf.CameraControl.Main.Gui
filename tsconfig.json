@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "target": "es6",
     "allowJs": true,
     "module": "commonjs",
     "noImplicitAny": true,
@@ -9,7 +10,9 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "paths": {
-      "*": ["node_modules/*"]
+      "*": [
+        "node_modules/*"
+      ]
     }
   },
   "include": [
