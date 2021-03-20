@@ -28,7 +28,7 @@
         "package": "electron-forge package",
         "premake": "sort-package-json",
         "make": "electron-forge make",
-        "prepublish": "sort-package-json",
+        "prepare": "sort-package-json",
         "publish": "electron-forge publish",
         "lint": "eslint --ext .ts ."
     },
