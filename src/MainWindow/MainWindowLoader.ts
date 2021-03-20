@@ -13,9 +13,7 @@ export class MainWindowLoader {
 
     constructor() {}
 
-    public createWindow() {
-        const mainWindowLocation = path.join(__dirname, '../../src/MainWindow/index.html');
-        const preloadLocation = path.join(__dirname, 'preload/preload.js');
+    public createWindow(mainWindowLocation: any, preloadLocation: any) {
         // Create the browser window.
         this.mainWindow = new BrowserWindow({
             height: 600,
@@ -39,8 +37,6 @@ export class MainWindowLoader {
 
         this.mainWindow.setMenu(this.createMenu());
         this.registerForUiEvents();
-
-        setTimeout(() => this.sendLogToGui(eLogType.Error, 'test'), 200);
     }
 
     private registerForUiEvents() {

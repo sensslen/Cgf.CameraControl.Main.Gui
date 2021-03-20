@@ -1,1 +1,1 @@
-# Cgf.CameraControl.Main.GuiSimple
+# Cgf.CameraControl.Main.Gui
