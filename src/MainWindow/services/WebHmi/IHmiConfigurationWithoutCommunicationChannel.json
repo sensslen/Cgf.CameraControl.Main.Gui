@@ -1,0 +1,25 @@
+{
+  "$ref": "#/definitions/IHmiConfigurationWithoutCommunicationChannel",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "IHmiConfigurationWithoutCommunicationChannel": {
+      "properties": {
+        "VideoMixer": {
+          "type": "number"
+        },
+        "instance": {
+          "type": "number"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "VideoMixer",
+        "instance",
+        "type"
+      ],
+      "type": "object"
+    }
+  }
+}
