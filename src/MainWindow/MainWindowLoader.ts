@@ -100,7 +100,7 @@ export class MainWindowLoader implements ISendMessagesToGui {
             error: (message: string) => this.sendLogToGui(eLogType.Error, message),
         };
 
-        await this.core.HmiFactory.builderAdd(new HmiBuilder(logger, this.core.MixerFactory, this));
+        await this.core.HmiFactory.builderAdd(new HmiBuilder(logger, this.core.MixerFactory, this), logger);
 
         const config = JSON.parse(fs.readFileSync(filepath).toString());
         this.core.bootstrap(logger, config);

@@ -1,6 +1,7 @@
 import { BrowserWindow, app } from 'electron';
 
 import { MainWindowLoader } from './MainWindow/MainWindowLoader';
+
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 
@@ -12,9 +13,9 @@ if (require('electron-squirrel-startup')) {
     app.quit();
 }
 
-const createMainWindow = (): void => {
+function createMainWindow(): void {
     mainWindow.createWindow(MAIN_WINDOW_WEBPACK_ENTRY, MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY);
-};
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

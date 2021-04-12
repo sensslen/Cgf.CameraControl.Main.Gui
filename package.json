@@ -85,7 +85,7 @@
     },
     "dependencies": {
         "ajv": "^8.0.5",
-        "cgf.cameracontrol.main.core": "^1.0.2-beta.20",
+        "cgf.cameracontrol.main.core": "^1.0.2-beta.28",
         "electron-squirrel-startup": "^1.0.0",
         "eslint-import-resolver-webpack": "^0.13.0",
         "react": "^17.0.2",

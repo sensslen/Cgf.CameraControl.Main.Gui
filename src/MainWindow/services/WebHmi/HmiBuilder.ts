@@ -37,7 +37,7 @@ export class HmiBuilder implements IBuilder<IHmi> {
 
         if (validConfig === undefined) {
             this.error(configValidator.errorGet());
-            return Promise.resolve(undefined);
+            return undefined;
         }
 
         const hmiConfig = config as IHmiConfiguration;
