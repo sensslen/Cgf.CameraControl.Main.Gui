@@ -4,12 +4,17 @@ class GamepadConnection {
     private _gamepadInstance?: Gamepad;
     private disposed = false;
 
-    public get Gamepad() {
+    public get gamepad() {
         return this._gamepadInstance;
     }
 
-    public get Connected() {
-        return this.Gamepad !== undefined;
+    public get connected() {
+        return this.gamepad !== undefined;
+    }
+
+    constructor(onConnect: (pad: Gamepad) => void, onDisconnect?: () => void) {
+        this.onConnect = onConnect;
+        this.onDisconnect = onDisconnect;
     }
 
     public onConnect(instance: Gamepad): void {
@@ -28,13 +33,8 @@ class GamepadConnection {
         }
     }
 
-    public Compare(onConnect: (pad: Gamepad) => void, onDisconnect?: () => void): boolean {
+    public compare(onConnect: (pad: Gamepad) => void, onDisconnect?: () => void): boolean {
         return onConnect === this._onConnect && onDisconnect === this._onDisconnect;
-    }
-
-    constructor(onConnect: (pad: Gamepad) => void, onDisconnect?: () => void) {
-        this.onConnect = onConnect;
-        this.onDisconnect = onDisconnect;
     }
 }
 
@@ -43,31 +43,34 @@ export class WebGamepadManager {
     private gamepadConnections: GamepadConnection[] = [];
     private availableGamepads: { [key: number]: { pad: Gamepad; used: boolean } } = {};
     private constructor() {
-        navigator.getGamepads().forEach((pad) => this.gamepadConnected(pad));
+        const gamepads = navigator.getGamepads();
+        for (const pad of gamepads) {
+            this.gamepadConnected(pad);
+        }
         window.addEventListener('gamepadconnected', (event) => this.gamepadConnected(event.gamepad));
         window.addEventListener('gamepaddisconnected', (event) => this.gamepadDisconnected(event.gamepad));
     }
 
-    public static Get(): WebGamepadManager {
+    public static get(): WebGamepadManager {
         if (this.singleton === undefined) {
             this.singleton = new WebGamepadManager();
         }
         return this.singleton;
     }
 
-    public Connect(onConnect: (pad: Gamepad) => void, onDisconnect?: () => void): void {
+    public connect(onConnect: (pad: Gamepad) => void, onDisconnect?: () => void): void {
         const resolver = new GamepadConnection(onConnect, onDisconnect);
         this.gamepadConnections.push(resolver);
 
         this.assignPads();
     }
 
-    public Disconnect(onConnect: (pad: Gamepad) => void, onDisconnect?: () => void): void {
+    public disconnect(onConnect: (pad: Gamepad) => void, onDisconnect?: () => void): void {
         const removeIndex = this.gamepadConnections.findIndex((connection) =>
-            connection.Compare(onConnect, onDisconnect)
+            connection.compare(onConnect, onDisconnect)
         );
         if (removeIndex != -1) {
-            const newlyAvailableGamepad = this.gamepadConnections[removeIndex].Gamepad;
+            const newlyAvailableGamepad = this.gamepadConnections[removeIndex].gamepad;
             const newlyAvailableInstance = this.availableGamepads[newlyAvailableGamepad.index];
             if (newlyAvailableInstance) {
                 newlyAvailableInstance.used = false;
@@ -92,7 +95,7 @@ export class WebGamepadManager {
                 this.availableGamepads[pad.index] = undefined;
             }
             this.gamepadConnections.forEach((connection) => {
-                if (connection.Gamepad && connection.onDisconnect && connection.Gamepad.index === pad.index) {
+                if (connection.gamepad && connection.onDisconnect && connection.gamepad.index === pad.index) {
                     connection.onDisconnect();
                 }
             });

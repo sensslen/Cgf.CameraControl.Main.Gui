@@ -1,7 +1,7 @@
 import { IConfig } from 'cgf.cameracontrol.main.core';
 
 export interface IHmiConfigurationWithoutCommunicationChannel extends IConfig {
-    VideoMixer: number;
+    videoMixer: number;
 }
 
 export interface IHmiConfiguration extends IHmiConfigurationWithoutCommunicationChannel {

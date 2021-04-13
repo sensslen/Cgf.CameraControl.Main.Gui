@@ -2,8 +2,8 @@ import * as fs from 'fs';
 
 import { BrowserWindow, Menu, dialog, ipcMain } from 'electron';
 import { Core, ILogger } from 'cgf.cameracontrol.main.core';
-import { ILogMessage, eLogType } from './Ipc/ILogMessage';
 
+import { ELogType, ILogMessage } from './Ipc/ILogMessage';
 import { HmiBuilder } from './services/WebHmi/HmiBuilder';
 import { ISendMessagesToGui } from './Ipc/ISendMessagesToGui';
 import { IpcChannelConstants } from './Ipc/IpcChannelConstants';
@@ -12,7 +12,7 @@ export class MainWindowLoader implements ISendMessagesToGui {
     private mainWindow?: Electron.BrowserWindow;
     private core?: Core;
 
-    public createWindow(mainWindowLocation: any, preloadLocation: any): void {
+    public createWindow(mainWindowLocation: string, preloadLocation: string): void {
         // Create the browser window.
         this.mainWindow = new BrowserWindow({
             height: 600,
@@ -43,8 +43,28 @@ export class MainWindowLoader implements ISendMessagesToGui {
         this.registerForUiEvents();
     }
 
+    public sendToGui(channel: string, ...args: unknown[]): void {
+        if (this.mainWindow) {
+            this.mainWindow.webContents.send(channel, ...args);
+        }
+    }
+
+    public invokeToGui<T>(channel: string, ...args: unknown[]): Promise<T> {
+        if (this.mainWindow) {
+            console.log(`invoking:${channel}`);
+            const retval = new Promise<T>((resolve, _reject) => {
+                ipcMain.once(channel, (_event, result: T) => {
+                    resolve(result);
+                });
+            });
+            this.sendToGui(channel, ...args);
+            return retval;
+        }
+        return Promise.reject('Main window not accessible');
+    }
+
     private registerForUiEvents() {
-        ipcMain.on(IpcChannelConstants.LoadConfiguration, () => this.showLoadConfigDialog());
+        ipcMain.on(IpcChannelConstants.loadConfiguration, () => this.showLoadConfigDialog());
     }
 
     private createMenu(): Menu {
@@ -96,24 +116,18 @@ export class MainWindowLoader implements ISendMessagesToGui {
         this.core = new Core();
 
         const logger: ILogger = {
-            log: (message: string) => this.sendLogToGui(eLogType.Info, message),
-            error: (message: string) => this.sendLogToGui(eLogType.Error, message),
+            log: (message: string) => this.sendLogToGui(ELogType.info, message),
+            error: (message: string) => this.sendLogToGui(ELogType.error, message),
         };
 
-        await this.core.HmiFactory.builderAdd(new HmiBuilder(logger, this.core.MixerFactory, this), logger);
+        await this.core.hmiFactory.builderAdd(new HmiBuilder(logger, this.core.mixerFactory, this), logger);
 
         const config = JSON.parse(fs.readFileSync(filepath).toString());
         this.core.bootstrap(logger, config);
     }
 
-    private sendLogToGui(type: eLogType, message: string) {
+    private sendLogToGui(type: ELogType, message: string) {
         const m: ILogMessage = { type: type, message: message };
-        this.sendToGui(IpcChannelConstants.Log, m);
-    }
-
-    public sendToGui<TMessage>(channel: string, message: TMessage): void {
-        if (this.mainWindow) {
-            this.mainWindow.webContents.send(channel, message);
-        }
+        this.sendToGui(IpcChannelConstants.log, m);
     }
 }

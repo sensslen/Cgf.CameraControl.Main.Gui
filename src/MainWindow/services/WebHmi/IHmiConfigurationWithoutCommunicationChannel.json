@@ -4,20 +4,20 @@
   "definitions": {
     "IHmiConfigurationWithoutCommunicationChannel": {
       "properties": {
-        "VideoMixer": {
-          "type": "number"
-        },
         "instance": {
           "type": "number"
         },
         "type": {
           "type": "string"
+        },
+        "videoMixer": {
+          "type": "number"
         }
       },
       "required": [
-        "VideoMixer",
         "instance",
-        "type"
+        "type",
+        "videoMixer"
       ],
       "type": "object"
     }

@@ -1,7 +1,8 @@
 import { EHmiEvent, getEventConnection } from './Events/EHmiEvent';
-import { IConnection, IHmi, ILogger, VideomixerFactory } from 'cgf.cameracontrol.main.core';
+import { IConnection, IHmi, ILogger, IVideoMixer, VideomixerFactory } from 'cgf.cameracontrol.main.core';
 
 import { EventEmitter } from 'events';
+import { IHmiBuildResult } from './IHmiBuildResult';
 import { IHmiConfiguration } from './IHmiConfiguration';
 import { IMixBlockNumberEvent } from './Events/IMixBlockNumberEvent';
 import { ISendMessagesToGui } from '../../Ipc/ISendMessagesToGui';
@@ -12,67 +13,7 @@ import { ipcMain } from 'electron';
 export class HmiBinding implements IHmi {
     private readonly _connectionEmitter: StrictEventEmitter<EventEmitter, IConnection> = new EventEmitter();
 
-    constructor(
-        private config: IHmiConfiguration,
-        private logger: ILogger,
-        mixerFactory: VideomixerFactory,
-        private guiSender: ISendMessagesToGui
-    ) {
-        ipcMain.on(
-            getEventConnection(config.communicationChannel, EHmiEvent.connection),
-            (_event, connected: boolean) => {
-                this.connected = connected;
-            }
-        );
-
-        const videoMixer = mixerFactory.get(config.VideoMixer);
-        ipcMain.on(
-            getEventConnection(config.communicationChannel, EHmiEvent.pan),
-            (_event, data: IMixBlockNumberEvent) => {
-                videoMixer.pan(data.mixEffectBlock, data.value);
-            }
-        );
-        ipcMain.on(
-            getEventConnection(config.communicationChannel, EHmiEvent.tilt),
-            (_event, data: IMixBlockNumberEvent) => {
-                videoMixer.tilt(data.mixEffectBlock, data.value);
-            }
-        );
-        ipcMain.on(
-            getEventConnection(config.communicationChannel, EHmiEvent.zoom),
-            (_event, data: IMixBlockNumberEvent) => {
-                videoMixer.zoom(data.mixEffectBlock, data.value);
-            }
-        );
-        ipcMain.on(
-            getEventConnection(config.communicationChannel, EHmiEvent.focus),
-            (_event, data: IMixBlockNumberEvent) => {
-                videoMixer.focus(data.mixEffectBlock, data.value);
-            }
-        );
-        ipcMain.on(
-            getEventConnection(config.communicationChannel, EHmiEvent.changeInput),
-            (_event, data: IMixBlockNumberEvent) => {
-                videoMixer.changeInput(data.mixEffectBlock, data.value);
-            }
-        );
-        ipcMain.on(getEventConnection(config.communicationChannel, EHmiEvent.runMacro), (_event, data: number) => {
-            videoMixer.runMacro(data);
-        });
-        ipcMain.on(
-            getEventConnection(config.communicationChannel, EHmiEvent.toggleKey),
-            (_event, data: IMixBlockNumberEvent) => {
-                videoMixer.toggleKey(data.mixEffectBlock, data.value);
-            }
-        );
-        ipcMain.on(getEventConnection(config.communicationChannel, EHmiEvent.cut), (_event, data: number) => {
-            videoMixer.cut(data);
-        });
-        ipcMain.on(getEventConnection(config.communicationChannel, EHmiEvent.auto), (_event, data: number) => {
-            videoMixer.auto(data);
-        });
-    }
-
+    private _videoMixer: IVideoMixer;
     private _connected = false;
     public get connected(): boolean {
         return this._connected;
@@ -83,37 +24,152 @@ export class HmiBinding implements IHmi {
         this.log(`connected:${v}`);
     }
 
-    subscribe(i: IConnection): void {
+    constructor(
+        private config: IHmiConfiguration,
+        private logger: ILogger,
+        mixerFactory: VideomixerFactory,
+        private guiSender: ISendMessagesToGui
+    ) {
+        this._videoMixer = mixerFactory.get(this.config.videoMixer);
+        ipcMain.on(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.connection),
+            (_event, connected: boolean) => {
+                this.connected = connected;
+            }
+        );
+
+        ipcMain.on(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.pan),
+            (_event, data: IMixBlockNumberEvent) => {
+                this._videoMixer.pan(data.mixEffectBlock, data.value);
+            }
+        );
+        ipcMain.on(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.tilt),
+            (_event, data: IMixBlockNumberEvent) => {
+                this._videoMixer.tilt(data.mixEffectBlock, data.value);
+            }
+        );
+        ipcMain.on(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.zoom),
+            (_event, data: IMixBlockNumberEvent) => {
+                this._videoMixer.zoom(data.mixEffectBlock, data.value);
+            }
+        );
+        ipcMain.on(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.focus),
+            (_event, data: IMixBlockNumberEvent) => {
+                this._videoMixer.focus(data.mixEffectBlock, data.value);
+            }
+        );
+        ipcMain.on(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.changeInput),
+            (_event, data: IMixBlockNumberEvent) => {
+                this._videoMixer.changeInput(data.mixEffectBlock, data.value);
+            }
+        );
+        ipcMain.on(getEventConnection(this.config.communicationChannel, EHmiEvent.runMacro), (_event, data: number) => {
+            this._videoMixer.runMacro(data);
+        });
+        ipcMain.on(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.toggleKey),
+            (_event, data: IMixBlockNumberEvent) => {
+                this._videoMixer.toggleKey(data.mixEffectBlock, data.value);
+            }
+        );
+        ipcMain.on(getEventConnection(this.config.communicationChannel, EHmiEvent.cut), (_event, data: number) => {
+            this._videoMixer.cut(data);
+        });
+        ipcMain.on(getEventConnection(this.config.communicationChannel, EHmiEvent.auto), (_event, data: number) => {
+            this._videoMixer.auto(data);
+        });
+    }
+
+    public subscribe(i: IConnection): void {
         i.change(this._connected);
         this._connectionEmitter.on('change', i.change);
     }
 
-    unsubscribe(i: IConnection): void {
+    public unsubscribe(i: IConnection): void {
         this._connectionEmitter.removeListener('change', i.change);
     }
 
-    dispose(): Promise<void> {
-        const retval = new Promise<void>((resolve, _reject) => {
-            ipcMain.once(getEventConnection(this.config.communicationChannel, EHmiEvent.dispose), () => {
-                resolve();
-            });
-        });
+    public async dispose(): Promise<void> {
+        await this.guiSender.invokeToGui(getEventConnection(this.config.communicationChannel, EHmiEvent.dispose));
 
-        this.guiSender.sendToGui(getEventConnection(this.config.communicationChannel, EHmiEvent.dispose), undefined);
-        return retval;
+        ipcMain.removeListener(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.connection),
+            (_event, connected: boolean) => {
+                this.connected = connected;
+            }
+        );
+
+        ipcMain.removeListener(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.pan),
+            (_event, data: IMixBlockNumberEvent) => {
+                this._videoMixer.pan(data.mixEffectBlock, data.value);
+            }
+        );
+        ipcMain.removeListener(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.tilt),
+            (_event, data: IMixBlockNumberEvent) => {
+                this._videoMixer.tilt(data.mixEffectBlock, data.value);
+            }
+        );
+        ipcMain.removeListener(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.zoom),
+            (_event, data: IMixBlockNumberEvent) => {
+                this._videoMixer.zoom(data.mixEffectBlock, data.value);
+            }
+        );
+        ipcMain.removeListener(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.focus),
+            (_event, data: IMixBlockNumberEvent) => {
+                this._videoMixer.focus(data.mixEffectBlock, data.value);
+            }
+        );
+        ipcMain.removeListener(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.changeInput),
+            (_event, data: IMixBlockNumberEvent) => {
+                this._videoMixer.changeInput(data.mixEffectBlock, data.value);
+            }
+        );
+        ipcMain.removeListener(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.runMacro),
+            (_event, data: number) => {
+                this._videoMixer.runMacro(data);
+            }
+        );
+        ipcMain.removeListener(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.toggleKey),
+            (_event, data: IMixBlockNumberEvent) => {
+                this._videoMixer.toggleKey(data.mixEffectBlock, data.value);
+            }
+        );
+        ipcMain.removeListener(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.cut),
+            (_event, data: number) => {
+                this._videoMixer.cut(data);
+            }
+        );
+        ipcMain.removeListener(
+            getEventConnection(this.config.communicationChannel, EHmiEvent.auto),
+            (_event, data: number) => {
+                this._videoMixer.auto(data);
+            }
+        );
     }
 
-    async startup(): Promise<void> {
-        this.guiSender.sendToGui(IpcChannelConstants.HmiConfiguration, this.config);
-        return new Promise<void>((resolve, reject) => {
-            ipcMain.once(IpcChannelConstants.HmiConfiguration, (_event, success: boolean, error?: any) => {
-                if (success) {
-                    resolve();
-                } else {
-                    reject(error);
-                }
-            });
-        });
+    public async startup(): Promise<void> {
+        const buildResult: IHmiBuildResult = await this.guiSender.invokeToGui(
+            IpcChannelConstants.hmiConfiguration,
+            this.config
+        );
+        if (buildResult.success) {
+            return Promise.resolve();
+        } else {
+            return Promise.reject(buildResult.error);
+        }
     }
 
     private log(toLog: string) {

@@ -1,11 +1,13 @@
 import styled from 'styled-components';
 
-const LogEntry = styled.p`
+const logEntry = styled.p`
     font-family: monospace;
 `;
 
-export const ErrorStyle = styled(LogEntry)`
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const ErrorStyle = styled(logEntry)`
     color: red;
 `;
 
-export const LogStyle = styled(LogEntry)``;
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const LogStyle = styled(logEntry)``;

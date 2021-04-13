@@ -4,15 +4,16 @@
     "es6": true,
     "node": true
   },
+  "parser": "@typescript-eslint/parser",
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
-    "plugin:import/typescript"
+    "plugin:import/typescript",
+    "plugin:prettier/recommended"
   ],
-  "parser": "@typescript-eslint/parser",
   "rules": {
     "@typescript-eslint/indent": [
       "error",
@@ -31,6 +32,23 @@
       {
         "argsIgnorePattern": "^_"
       }
+    ],
+    "sort-imports": [
+      "error",
+      {
+        "memberSyntaxSortOrder": [
+          "none",
+          "all",
+          "multiple",
+          "single"
+        ]
+      }
+    ],
+    "@typescript-eslint/member-ordering": [
+      "error"
+    ],
+    "@typescript-eslint/naming-convention": [
+      "error"
     ]
   }
 }

@@ -1,9 +1,9 @@
-export enum eLogType {
-    Info,
-    Error,
+export enum ELogType {
+    info,
+    error,
 }
 
 export interface ILogMessage {
-    type: eLogType;
+    type: ELogType;
     message: string;
 }

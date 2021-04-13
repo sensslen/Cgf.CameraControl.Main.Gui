@@ -1,32 +1,32 @@
 import { IHmiConfiguration } from '../../IHmiConfiguration';
 
-export enum eButtonDirection {
+export enum EButtonDirection {
     up = 'up',
     down = 'down',
     left = 'left',
     right = 'right',
 }
 
-export enum eSpecialFunctionType {
+export enum ESpecialFunctionType {
     key = 'key',
     macro = 'macro',
 }
 
 export interface ISpecialFunctionDefinition {
-    Type: eSpecialFunctionType;
-    Index: number;
+    type: ESpecialFunctionType;
+    index: number;
 }
 
 export interface IWebGamepadConfig extends IHmiConfiguration {
-    MixBlock: number;
-    ConnectionChange: {
-        Default: { [key in eButtonDirection]?: number };
-        Alt?: { [key in eButtonDirection]?: number };
-        AltLower?: { [key in eButtonDirection]?: number };
+    mixBlock: number;
+    connectionChange: {
+        default: { [key in EButtonDirection]?: number };
+        alt?: { [key in EButtonDirection]?: number };
+        altLower?: { [key in EButtonDirection]?: number };
     };
-    SpecialFunction: {
-        Default: { [key in eButtonDirection]?: ISpecialFunctionDefinition };
-        Alt?: { [key in eButtonDirection]?: ISpecialFunctionDefinition };
-        AltLower?: { [key in eButtonDirection]?: ISpecialFunctionDefinition };
+    specialFunction: {
+        default: { [key in EButtonDirection]?: ISpecialFunctionDefinition };
+        alt?: { [key in EButtonDirection]?: ISpecialFunctionDefinition };
+        altLower?: { [key in EButtonDirection]?: ISpecialFunctionDefinition };
     };
 }

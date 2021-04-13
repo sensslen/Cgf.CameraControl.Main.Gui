@@ -7,26 +7,18 @@ import { ConfigValidator } from '../Configuration/ConfigValidator';
 import { HmiBinding } from './HmiBinding';
 import { ISendMessagesToGui } from '../../Ipc/ISendMessagesToGui';
 import { IpcChannelConstants } from '../../Ipc/IpcChannelConstants';
-import { ipcMain } from 'electron';
 
 export class HmiBuilder implements IBuilder<IHmi> {
+    private hmiCounter = 0;
+
     constructor(
         private logger: ILogger,
         private mixerFactory: VideomixerFactory,
         private guiSender: ISendMessagesToGui
     ) {}
     public supportedTypes(): Promise<string[]> {
-        const retval = new Promise<string[]>((resolve, _reject) => {
-            ipcMain.once(IpcChannelConstants.HmiTypesSupported, (_event, types: string[]) => {
-                resolve(types);
-            });
-        });
-
-        this.guiSender.sendToGui(IpcChannelConstants.HmiTypesSupported, undefined);
-        return retval;
+        return this.guiSender.invokeToGui(IpcChannelConstants.hmiTypesSupported);
     }
-
-    private hmiCounter = 0;
 
     public async build(config: IConfig): Promise<IHmi> {
         const configValidator = new ConfigValidator();
@@ -41,12 +33,17 @@ export class HmiBuilder implements IBuilder<IHmi> {
         }
 
         const hmiConfig = config as IHmiConfiguration;
-        hmiConfig.communicationChannel = `${IpcChannelConstants.HmiEvent}${this.hmiCounter}`;
+        hmiConfig.communicationChannel = `${IpcChannelConstants.hmiEvent}${this.hmiCounter}`;
         this.hmiCounter++;
 
         const retval = new HmiBinding(hmiConfig, this.logger, this.mixerFactory, this.guiSender);
-        await retval.startup();
-        return retval;
+        try {
+            await retval.startup();
+            return retval;
+        } catch (error) {
+            this.error(`Failed to build - ${error}`);
+            return undefined;
+        }
     }
 
     private error(error: string): void {
