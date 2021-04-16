@@ -1,14 +1,21 @@
 const rules = require('./webpack.rules');
 const plugins = require('./webpack.main.plugins');
+const path = require('path');
 
 module.exports = {
     /**
      * This is the main entry point for your application, it's the first file
      * that runs in the main process.
      */
-    entry: './src/main.ts',
+    entry: {
+        index: './src/main.ts',
+        atemSocketChild: './node_modules/atem-connection/dist/lib/atemSocketChild.js',
+    },
     // Put your normal webpack config below here
-    externals: /^(atemSocketChild)$/i,
+    output: {
+        filename: '[name].js',
+        path: path.resolve(__dirname, '.webpack/main'),
+    },
     plugins: plugins,
     module: {
         rules,
