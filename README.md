@@ -1,1 +1,1 @@
-# Cgf.CameraControl.Main.Gui
+# Cgf.CameraControl.Main.Gui [![CodeFactor](https://www.codefactor.io/repository/github/sensslen/cgf.cameracontrol.main.gui/badge)](https://www.codefactor.io/repository/github/sensslen/cgf.cameracontrol.main.gui)

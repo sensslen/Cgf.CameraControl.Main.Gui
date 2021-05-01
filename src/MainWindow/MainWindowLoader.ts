@@ -1,19 +1,18 @@
-import { Core, ILogger } from 'cgf.cameracontrol.main.core';
-import { Fx10Builder, Rumblepad2Builder } from 'cgf.cameracontrol.main.gamepad';
-import { BrowserWindow, dialog, ipcMain, Menu } from 'electron';
-import { IpcChannelConstants } from '../Ipc/IpcChannelConstants';
-import * as path from 'path';
 import * as fs from 'fs';
-import { ILogMessage } from '../Ipc/ILogMessage';
-import { eLogType } from '../Ipc/ILogMessage';
 
-export class MainWindowLoader {
+import { BrowserWindow, Menu, dialog, ipcMain } from 'electron';
+import { Core, ILogger } from 'cgf.cameracontrol.main.core';
+
+import { ELogType, ILogMessage } from './Ipc/ILogMessage';
+import { HmiBuilder } from './services/WebHmi/HmiBuilder';
+import { ISendMessagesToGui } from './Ipc/ISendMessagesToGui';
+import { IpcChannelConstants } from './Ipc/IpcChannelConstants';
+
+export class MainWindowLoader implements ISendMessagesToGui {
     private mainWindow?: Electron.BrowserWindow;
     private core?: Core;
 
-    constructor() {}
-
-    public createWindow(mainWindowLocation: any, preloadLocation: any) {
+    public createWindow(mainWindowLocation: string, preloadLocation: string): void {
         // Create the browser window.
         this.mainWindow = new BrowserWindow({
             height: 600,
@@ -27,20 +26,45 @@ export class MainWindowLoader {
         // and load the index.html of the app.
         this.mainWindow.loadURL(mainWindowLocation);
 
-        // Emitted when the window is closed.
+        // Emitted before the window is closed.
+        this.mainWindow.on('close', async () => {
+            await this.disposeCurrentCoreInstane().then(() => (this.mainWindow = undefined));
+        });
+
+        // Emitted after the window is closed.
         this.mainWindow.on('closed', () => {
             // Dereference the window object, usually you would store windows
             // in an array if your app supports multi windows, this is the time
             // when you should delete the corresponding element.
-            this.disposeCurrentCoreInstane().then(() => (this.mainWindow = undefined));
+            this.mainWindow = undefined;
         });
 
         this.mainWindow.setMenu(this.createMenu());
         this.registerForUiEvents();
     }
 
+    public sendToGui(channel: string, ...args: unknown[]): void {
+        if (this.mainWindow) {
+            this.mainWindow.webContents.send(channel, ...args);
+        }
+    }
+
+    public invokeToGui<T>(channel: string, ...args: unknown[]): Promise<T> {
+        if (this.mainWindow) {
+            const retval = new Promise<T>((resolve, _reject) => {
+                ipcMain.once(channel, (_event, result: T) => {
+                    resolve(result);
+                });
+            });
+            this.sendToGui(channel, ...args);
+            return retval;
+        }
+        return Promise.reject('Main window not accessible');
+    }
+
     private registerForUiEvents() {
-        ipcMain.on(IpcChannelConstants.LoadConfiguration, () => this.showLoadConfigDialog());
+        ipcMain.on(IpcChannelConstants.loadConfiguration, () => this.showLoadConfigDialog());
+        ipcMain.on(IpcChannelConstants.log, (_event, log: ILogMessage) => this.sendLogToGui(log.type, log.message));
     }
 
     private createMenu(): Menu {
@@ -62,7 +86,7 @@ export class MainWindowLoader {
 
     private async showLoadConfigDialog() {
         try {
-            let openComplete = await dialog.showOpenDialog(this.mainWindow as BrowserWindow, {
+            const openComplete = await dialog.showOpenDialog(this.mainWindow as BrowserWindow, {
                 properties: ['openFile'],
                 filters: [{ name: 'JSON Files', extensions: ['json'] }],
             });
@@ -76,7 +100,10 @@ export class MainWindowLoader {
 
     private async disposeCurrentCoreInstane() {
         try {
-            await this.core?.dispose();
+            if (this.core) {
+                await this.core.dispose();
+                this.core = undefined;
+            }
         } catch (error) {
             console.log('dispose error:');
             console.log(error);
@@ -89,23 +116,18 @@ export class MainWindowLoader {
         this.core = new Core();
 
         const logger: ILogger = {
-            log: (message: string) => this.sendLogToGui(eLogType.Info, message),
-            error: (message: string) => this.sendLogToGui(eLogType.Error, message),
+            log: (message: string) => this.sendLogToGui(ELogType.info, message),
+            error: (message: string) => this.sendLogToGui(ELogType.error, message),
         };
 
-        this.core.HmiFactory.builderAdd(new Fx10Builder(logger, this.core.MixerFactory));
-        this.core.HmiFactory.builderAdd(new Rumblepad2Builder(logger, this.core.MixerFactory));
+        await this.core.hmiFactory.builderAdd(new HmiBuilder(logger, this.core.mixerFactory, this), logger);
 
         const config = JSON.parse(fs.readFileSync(filepath).toString());
         this.core.bootstrap(logger, config);
     }
 
-    private sendLogToGui(type: eLogType, message: string) {
+    private sendLogToGui(type: ELogType, message: string) {
         const m: ILogMessage = { type: type, message: message };
-        this.sendToGui(IpcChannelConstants.Log, m);
-    }
-
-    private sendToGui<TMessage>(channel: string, message: TMessage) {
-        this.mainWindow?.webContents.send(channel, message);
+        this.sendToGui(IpcChannelConstants.log, m);
     }
 }

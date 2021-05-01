@@ -1,0 +1,284 @@
+{
+  "$ref": "#/definitions/IWebGamepadConfig",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "ESpecialFunctionType": {
+      "enum": [
+        "key",
+        "macro"
+      ],
+      "type": "string"
+    },
+    "ISpecialFunctionKeyConfig": {
+      "properties": {
+        "index": {
+          "type": "number"
+        },
+        "type": {
+          "$ref": "#/definitions/ESpecialFunctionType"
+        }
+      },
+      "required": [
+        "index",
+        "type"
+      ],
+      "type": "object"
+    },
+    "ISpecialFunctionMacroConfig": {
+      "properties": {
+        "indexes": {
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "type": {
+          "$ref": "#/definitions/ESpecialFunctionType"
+        }
+      },
+      "required": [
+        "indexes",
+        "type"
+      ],
+      "type": "object"
+    },
+    "IWebGamepadConfig": {
+      "properties": {
+        "communicationChannel": {
+          "type": "string"
+        },
+        "connectionChange": {
+          "properties": {
+            "alt": {
+              "additionalProperties": false,
+              "properties": {
+                "down": {
+                  "type": "number"
+                },
+                "left": {
+                  "type": "number"
+                },
+                "right": {
+                  "type": "number"
+                },
+                "up": {
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            },
+            "altLower": {
+              "additionalProperties": false,
+              "properties": {
+                "down": {
+                  "type": "number"
+                },
+                "left": {
+                  "type": "number"
+                },
+                "right": {
+                  "type": "number"
+                },
+                "up": {
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            },
+            "default": {
+              "additionalProperties": false,
+              "properties": {
+                "down": {
+                  "type": "number"
+                },
+                "left": {
+                  "type": "number"
+                },
+                "right": {
+                  "type": "number"
+                },
+                "up": {
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "required": [
+            "default"
+          ],
+          "type": "object"
+        },
+        "instance": {
+          "type": "number"
+        },
+        "mixBlock": {
+          "type": "number"
+        },
+        "specialFunction": {
+          "properties": {
+            "alt": {
+              "additionalProperties": false,
+              "properties": {
+                "down": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
+                },
+                "left": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
+                },
+                "right": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
+                },
+                "up": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
+                }
+              },
+              "type": "object"
+            },
+            "altLower": {
+              "additionalProperties": false,
+              "properties": {
+                "down": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
+                },
+                "left": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
+                },
+                "right": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
+                },
+                "up": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
+                }
+              },
+              "type": "object"
+            },
+            "default": {
+              "additionalProperties": false,
+              "properties": {
+                "down": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
+                },
+                "left": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
+                },
+                "right": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
+                },
+                "up": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
+                }
+              },
+              "type": "object"
+            }
+          },
+          "required": [
+            "default"
+          ],
+          "type": "object"
+        },
+        "type": {
+          "type": "string"
+        },
+        "videoMixer": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "communicationChannel",
+        "connectionChange",
+        "instance",
+        "mixBlock",
+        "specialFunction",
+        "type",
+        "videoMixer"
+      ],
+      "type": "object"
+    }
+  }
+}

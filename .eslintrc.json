@@ -4,12 +4,62 @@
     "es6": true,
     "node": true
   },
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  
+  "parserOptions":  {
+   "ecmaVersion":  2018,
+    "sourceType":  "module",
+    "ecmaFeatures":  {
+      "jsx":  true
+    }
+  },
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/errors",
-    "plugin:import/warnings"
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "plugin:prettier/recommended",
+    "plugin:react/recommended"
   ],
-  "parser": "@typescript-eslint/parser"
+  "settings":  {
+    "react":  {
+      "version": "detect"  // Tells eslint-plugin-react to automatically detect the version of React to use
+    }
+  },
+  "rules": {
+    "@typescript-eslint/indent": [
+      "error",
+      4
+    ],
+    "semi": [
+      "error",
+      "always"
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "sort-imports": [
+      "error",
+      {
+        "memberSyntaxSortOrder": [
+          "none",
+          "all",
+          "multiple",
+          "single"
+        ]
+      }
+    ],
+    "@typescript-eslint/member-ordering": [
+      "error"
+    ],
+    "@typescript-eslint/naming-convention": [
+      "error"
+    ]
+  }
 }
