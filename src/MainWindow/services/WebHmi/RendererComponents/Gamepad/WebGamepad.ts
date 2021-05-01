@@ -17,14 +17,13 @@ export class WebGamepad {
 
     private altKeyState = EAltKey.none;
 
-    private gamepad?: Gamepad = undefined;
-    private disposed = false;
     constructor(private logger: ILogger, private config: IWebGamepadConfig) {}
 
     public start(): void {
         const manager = WebGamepadManager.get();
         manager.connect(
-            (pad) => this.onConnect(pad),
+            (pad) => this.gamepadLoop(pad),
+            (id) => this.onConnect(id),
             () => this.onDisconnect()
         );
 
@@ -35,38 +34,32 @@ export class WebGamepad {
         });
     }
 
-    private onConnect(pad: Gamepad) {
-        this.gamepad = pad;
+    private onConnect(id: number) {
         this.sendEvent(EHmiEvent.connection, true);
-        this.log(`connected to:${pad.index}`);
-        this.processGamepad();
+        this.log(`connected to:${id}`);
     }
 
     private onDisconnect() {
-        this.gamepad = undefined;
         this.log('disconnected');
         this.sendEvent(EHmiEvent.connection, false);
     }
 
-    private processGamepad() {
-        if (this.disposed || !this.gamepad) {
-            return;
-        }
+    private gamepadLoop(pad: Gamepad) {
+        this.evaluatePressRelease(pad, 12, () => this.changeConnection(EButtonDirection.up));
+        this.evaluatePressRelease(pad, 15, () => this.changeConnection(EButtonDirection.right));
+        this.evaluatePressRelease(pad, 13, () => this.changeConnection(EButtonDirection.down));
+        this.evaluatePressRelease(pad, 14, () => this.changeConnection(EButtonDirection.left));
 
-        this.evaluatePressRelease(12, () => this.changeConnection(EButtonDirection.up));
-        this.evaluatePressRelease(15, () => this.changeConnection(EButtonDirection.right));
-        this.evaluatePressRelease(13, () => this.changeConnection(EButtonDirection.down));
-        this.evaluatePressRelease(14, () => this.changeConnection(EButtonDirection.left));
+        this.evaluatePressRelease(pad, 5, () => this.sendEvent(EHmiEvent.cut, this.config.mixBlock));
+        this.evaluatePressRelease(pad, 7, () => this.sendEvent(EHmiEvent.auto, this.config.mixBlock));
 
-        this.evaluatePressRelease(5, () => this.sendEvent(EHmiEvent.cut, this.config.mixBlock));
-        this.evaluatePressRelease(7, () => this.sendEvent(EHmiEvent.auto, this.config.mixBlock));
-
-        this.evaluatePressRelease(3, () => this.specialFunction(EButtonDirection.up));
-        this.evaluatePressRelease(1, () => this.specialFunction(EButtonDirection.right));
-        this.evaluatePressRelease(0, () => this.specialFunction(EButtonDirection.down));
-        this.evaluatePressRelease(2, () => this.specialFunction(EButtonDirection.left));
+        this.evaluatePressRelease(pad, 3, () => this.specialFunction(EButtonDirection.up));
+        this.evaluatePressRelease(pad, 1, () => this.specialFunction(EButtonDirection.right));
+        this.evaluatePressRelease(pad, 0, () => this.specialFunction(EButtonDirection.down));
+        this.evaluatePressRelease(pad, 2, () => this.specialFunction(EButtonDirection.left));
 
         this.evaluatePressRelease(
+            pad,
             4,
             () => {
                 if (this.altKeyState === EAltKey.none) {
@@ -80,6 +73,7 @@ export class WebGamepad {
             }
         );
         this.evaluatePressRelease(
+            pad,
             6,
             () => {
                 if (this.altKeyState === EAltKey.none) {
@@ -93,15 +87,14 @@ export class WebGamepad {
             }
         );
 
-        this.sendMixBlockEventIfChanged(EHmiEvent.pan, this.gamepad.axes[0] * this.gamepad.axes[0]);
-        this.sendMixBlockEventIfChanged(EHmiEvent.tilt, -this.gamepad.axes[1] * this.gamepad.axes[1]);
-        this.sendMixBlockEventIfChanged(EHmiEvent.zoom, this.gamepad.axes[2]);
-        this.sendMixBlockEventIfChanged(EHmiEvent.focus, this.gamepad.axes[3]);
-
-        window.requestAnimationFrame(() => this.processGamepad());
+        this.sendMixBlockEventIfChanged(EHmiEvent.pan, pad.axes[0] * pad.axes[0]);
+        this.sendMixBlockEventIfChanged(EHmiEvent.tilt, -pad.axes[1] * pad.axes[1]);
+        this.sendMixBlockEventIfChanged(EHmiEvent.zoom, pad.axes[2]);
+        this.sendMixBlockEventIfChanged(EHmiEvent.focus, pad.axes[3]);
     }
 
     private changeConnection(direction: EButtonDirection) {
+        this.log(`change connection:${direction}`);
         let nextInput = this.config.connectionChange.default[direction];
         switch (this.altKeyState) {
             case EAltKey.alt:
@@ -155,10 +148,10 @@ export class WebGamepad {
     private dispose() {
         const manager = WebGamepadManager.get();
         manager.disconnect(
-            (pad) => this.onConnect(pad),
+            (pad) => this.gamepadLoop(pad),
+            (id) => this.onConnect(id),
             () => this.onDisconnect()
         );
-        this.disposed = true;
     }
 
     private log(message: string) {
@@ -182,13 +175,21 @@ export class WebGamepad {
         }
     }
 
-    private evaluatePressRelease(button: number, onPress?: () => void, onRelease?: () => void): void {
-        const newValue = this.gamepad.buttons[button];
+    private evaluatePressRelease(pad: Gamepad, button: number, onPress?: () => void, onRelease?: () => void): void {
+        const newValue = pad.buttons[button];
         if (newValue) {
             const lastValue = this.lastButtonState[button];
             this.lastButtonState[button] = newValue;
             if (lastValue === undefined || lastValue.pressed !== newValue.pressed) {
-                newValue.pressed ? onPress() : onRelease();
+                if (newValue.pressed) {
+                    if (onPress) {
+                        onPress();
+                    }
+                } else {
+                    if (onRelease) {
+                        onRelease();
+                    }
+                }
             }
         }
     }

@@ -16,7 +16,7 @@ class LogComponentState {
 }
 
 export class LogComponent extends React.Component<Record<string, never>, LogComponentState> {
-    private readonly maximumLogCount = 50;
+    private readonly maximumLogCount = 500;
     private uniqueKeyCounter = 0;
     constructor(props: Record<string, never>) {
         super(props);

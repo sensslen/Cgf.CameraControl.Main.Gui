@@ -1,6 +1,6 @@
-const rules = require('./webpack.rules');
-const plugins = require('./webpack.main.plugins');
-const path = require('path');
+var rules = require('./webpack.rules');
+var plugins = require('./webpack.main.plugins');
+var path = require('path');
 
 module.exports = {
     /**
@@ -18,7 +18,7 @@ module.exports = {
     },
     plugins: plugins,
     module: {
-        rules,
+        rules: rules,
     },
     resolve: {
         extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json'],

@@ -51,7 +51,6 @@ export class MainWindowLoader implements ISendMessagesToGui {
 
     public invokeToGui<T>(channel: string, ...args: unknown[]): Promise<T> {
         if (this.mainWindow) {
-            console.log(`invoking:${channel}`);
             const retval = new Promise<T>((resolve, _reject) => {
                 ipcMain.once(channel, (_event, result: T) => {
                     resolve(result);
@@ -65,6 +64,7 @@ export class MainWindowLoader implements ISendMessagesToGui {
 
     private registerForUiEvents() {
         ipcMain.on(IpcChannelConstants.loadConfiguration, () => this.showLoadConfigDialog());
+        ipcMain.on(IpcChannelConstants.log, (_event, log: ILogMessage) => this.sendLogToGui(log.type, log.message));
     }
 
     private createMenu(): Menu {

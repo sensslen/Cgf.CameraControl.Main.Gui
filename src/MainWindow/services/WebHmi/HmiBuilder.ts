@@ -20,7 +20,7 @@ export class HmiBuilder implements IBuilder<IHmi> {
         return this.guiSender.invokeToGui(IpcChannelConstants.hmiTypesSupported);
     }
 
-    public async build(config: IConfig): Promise<IHmi> {
+    public build(config: IConfig): Promise<IHmi> {
         const configValidator = new ConfigValidator();
         const validConfig = configValidator.validate<IHmiConfigurationWithoutCommunicationChannel>(
             config,
@@ -29,7 +29,7 @@ export class HmiBuilder implements IBuilder<IHmi> {
 
         if (validConfig === undefined) {
             this.error(configValidator.errorGet());
-            return undefined;
+            return Promise.reject(configValidator.errorGet());
         }
 
         const hmiConfig = config as IHmiConfiguration;
@@ -37,13 +37,16 @@ export class HmiBuilder implements IBuilder<IHmi> {
         this.hmiCounter++;
 
         const retval = new HmiBinding(hmiConfig, this.logger, this.mixerFactory, this.guiSender);
-        try {
-            await retval.startup();
-            return retval;
-        } catch (error) {
-            this.error(`Failed to build - ${error}`);
-            return undefined;
-        }
+        return new Promise<IHmi>((resolve, reject) => {
+            retval
+                .startup()
+                .then(() => {
+                    resolve(retval);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
     }
 
     private error(error: string): void {
