@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import { inc as semverInc } from 'semver';
-import simpleGit from 'simple-git';
+const fs = require('fs');
+const path = require('path');
+const semverInc = require('semver').inc;
+const simpleGit = require('simple-git').simpleGit;
 
 const git = simpleGit();
 
