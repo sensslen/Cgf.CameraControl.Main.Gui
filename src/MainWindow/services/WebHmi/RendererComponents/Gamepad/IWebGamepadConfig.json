@@ -9,7 +9,7 @@
       ],
       "type": "string"
     },
-    "ISpecialFunctionDefinition": {
+    "ISpecialFunctionKeyConfig": {
       "properties": {
         "index": {
           "type": "number"
@@ -19,8 +19,27 @@
         }
       },
       "required": [
-        "type",
-        "index"
+        "index",
+        "type"
+      ],
+      "type": "object"
+    },
+    "ISpecialFunctionMacroConfig": {
+      "properties": {
+        "indexes": {
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "type": {
+          "$ref": "#/definitions/ESpecialFunctionType"
+        }
+      },
+      "required": [
+        "indexes",
+        "type"
       ],
       "type": "object"
     },
@@ -103,16 +122,44 @@
               "additionalProperties": false,
               "properties": {
                 "down": {
-                  "$ref": "#/definitions/ISpecialFunctionDefinition"
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
                 },
                 "left": {
-                  "$ref": "#/definitions/ISpecialFunctionDefinition"
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
                 },
                 "right": {
-                  "$ref": "#/definitions/ISpecialFunctionDefinition"
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
                 },
                 "up": {
-                  "$ref": "#/definitions/ISpecialFunctionDefinition"
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
                 }
               },
               "type": "object"
@@ -121,16 +168,44 @@
               "additionalProperties": false,
               "properties": {
                 "down": {
-                  "$ref": "#/definitions/ISpecialFunctionDefinition"
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
                 },
                 "left": {
-                  "$ref": "#/definitions/ISpecialFunctionDefinition"
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
                 },
                 "right": {
-                  "$ref": "#/definitions/ISpecialFunctionDefinition"
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
                 },
                 "up": {
-                  "$ref": "#/definitions/ISpecialFunctionDefinition"
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
                 }
               },
               "type": "object"
@@ -139,16 +214,44 @@
               "additionalProperties": false,
               "properties": {
                 "down": {
-                  "$ref": "#/definitions/ISpecialFunctionDefinition"
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
                 },
                 "left": {
-                  "$ref": "#/definitions/ISpecialFunctionDefinition"
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
                 },
                 "right": {
-                  "$ref": "#/definitions/ISpecialFunctionDefinition"
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
                 },
                 "up": {
-                  "$ref": "#/definitions/ISpecialFunctionDefinition"
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
+                    },
+                    {
+                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
+                    }
+                  ]
                 }
               },
               "type": "object"

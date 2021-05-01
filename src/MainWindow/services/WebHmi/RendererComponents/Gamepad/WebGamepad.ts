@@ -1,8 +1,10 @@
-import { EButtonDirection, ESpecialFunctionType, IWebGamepadConfig } from './IWebGamepadConfig';
+import { EButtonDirection, IWebGamepadConfig } from './IWebGamepadConfig';
 import { EHmiEvent, getEventConnection } from '../../Events/EHmiEvent';
 
 import { ILogger } from 'cgf.cameracontrol.main.core';
 import { IMixBlockNumberEvent } from '../../Events/IMixBlockNumberEvent';
+import { ISpecialFunction } from './SpecialFunctions/ISpecialFunction';
+import { SpecialFunctionFactory } from './SpecialFunctions/SpecialFunctionFactory';
 import { WebGamepadManager } from './WebGamepadManager';
 
 enum EAltKey {
@@ -14,10 +16,41 @@ enum EAltKey {
 export class WebGamepad {
     private readonly lastValueStates: { [key in EHmiEvent]?: number } = {};
     private readonly lastButtonState: { [key: number]: GamepadButton } = {};
+    private readonly specialFunctionDefault: { [key in EButtonDirection]?: ISpecialFunction } = {};
+    private readonly specialFunctionAlt: { [key in EButtonDirection]?: ISpecialFunction } = {};
+    private readonly specialFunctionAltLower: { [key in EButtonDirection]?: ISpecialFunction } = {};
 
     private altKeyState = EAltKey.none;
 
-    constructor(private logger: ILogger, private config: IWebGamepadConfig) {}
+    constructor(private logger: ILogger, private config: IWebGamepadConfig) {
+        for (const key in config.specialFunction.default) {
+            if (Object.prototype.hasOwnProperty.call(config.specialFunction.default, key)) {
+                this.specialFunctionDefault[key as EButtonDirection] = SpecialFunctionFactory.get(
+                    config.specialFunction.default[key as EButtonDirection]
+                );
+            }
+        }
+
+        if (config.specialFunction.alt) {
+            for (const key in config.specialFunction.alt) {
+                if (Object.prototype.hasOwnProperty.call(config.specialFunction.alt, key)) {
+                    this.specialFunctionAlt[key as EButtonDirection] = SpecialFunctionFactory.get(
+                        config.specialFunction.alt[key as EButtonDirection]
+                    );
+                }
+            }
+        }
+
+        if (config.specialFunction.altLower) {
+            for (const key in config.specialFunction.altLower) {
+                if (Object.prototype.hasOwnProperty.call(config.specialFunction.altLower, key)) {
+                    this.specialFunctionAltLower[key as EButtonDirection] = SpecialFunctionFactory.get(
+                        config.specialFunction.altLower[key as EButtonDirection]
+                    );
+                }
+            }
+        }
+    }
 
     public start(): void {
         const manager = WebGamepadManager.get();
@@ -117,31 +150,31 @@ export class WebGamepad {
     }
 
     private specialFunction(key: EButtonDirection) {
-        let specialFunction = this.config.specialFunction.default[key];
+        let specialFunction = this.specialFunctionDefault[key];
         switch (this.altKeyState) {
-            case EAltKey.alt:
-                if (this.config.specialFunction.alt) {
-                    specialFunction = this.config.specialFunction.alt[key];
+            case EAltKey.alt: {
+                const altVariant = this.specialFunctionAlt[key];
+                if (altVariant) {
+                    specialFunction = altVariant;
                 }
                 break;
-            case EAltKey.altLower:
-                if (this.config.specialFunction.altLower) {
-                    specialFunction = this.config.specialFunction.altLower[key];
+            }
+            case EAltKey.altLower: {
+                const altLowerVariant = this.specialFunctionAltLower[key];
+                if (altLowerVariant) {
+                    specialFunction = altLowerVariant;
                 }
                 break;
+            }
             default:
                 break;
         }
 
         if (specialFunction) {
-            switch (specialFunction.type) {
-                case ESpecialFunctionType.key:
-                    this.sendMixBlockEventIfChanged(EHmiEvent.toggleKey, specialFunction.index);
-                    break;
-                case ESpecialFunctionType.macro:
-                    this.sendEvent(EHmiEvent.runMacro, specialFunction.index);
-                    break;
-            }
+            specialFunction.run(
+                (event, value) => this.sendMixBlockEventIfChanged(event, value),
+                (event, value) => this.sendEvent(event, value)
+            );
         }
     }
 

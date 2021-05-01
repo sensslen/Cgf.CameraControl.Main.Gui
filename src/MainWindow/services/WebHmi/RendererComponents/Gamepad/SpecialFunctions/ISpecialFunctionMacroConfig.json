@@ -1,0 +1,32 @@
+{
+  "$ref": "#/definitions/ISpecialFunctionMacroConfig",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "ESpecialFunctionType": {
+      "enum": [
+        "key",
+        "macro"
+      ],
+      "type": "string"
+    },
+    "ISpecialFunctionMacroConfig": {
+      "properties": {
+        "indexes": {
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "type": {
+          "$ref": "#/definitions/ESpecialFunctionType"
+        }
+      },
+      "required": [
+        "indexes",
+        "type"
+      ],
+      "type": "object"
+    }
+  }
+}
