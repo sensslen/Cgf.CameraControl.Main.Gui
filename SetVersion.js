@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const semverInc = require('semver').inc;
-const simpleGit = require('simple-git').simpleGit;
+const semver = require('semver');
+const simpleGit = require('simple-git');
 
 const git = simpleGit();
 
@@ -20,7 +20,7 @@ async function calculateVersionNumber() {
     if (betaCount === undefined) {
         throw new Error(`Cannot convert '${split[1]}' to a number`);
     }
-    return `${semverInc(split[0], 'patch')}-beta.${betaCount}`;
+    return `${semver.inc(split[0], 'patch')}-beta.${betaCount}`;
 }
 
 async function main() {
