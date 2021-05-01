@@ -9,8 +9,13 @@ const mainWindow = new MainWindowLoader();
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
-    // eslint-disable-line global-require
     app.quit();
+}
+
+// Handle auto updates on Windows and Mac
+if (process.platform === 'darwin' || process.platform === 'win32') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    require('update-electron-app')();
 }
 
 function createMainWindow(): void {
