@@ -5,7 +5,8 @@
     "ESpecialFunctionType": {
       "enum": [
         "key",
-        "macro"
+        "macro",
+        "connectionChange"
       ],
       "type": "string"
     },

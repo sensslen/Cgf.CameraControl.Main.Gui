@@ -21,11 +21,12 @@
     },
     "main": ".webpack/main",
     "scripts": {
+        "connection-change-config-schema": "ts-json-schema-generator --path \"./src/**/*.ts\" --type ISpecialFunctionConnectionChangeConfig -o src/MainWindow/services/WebHmi/RendererComponents/Gamepad/SpecialFunctions/ISpecialFunctionConnectionChangeConfig.json --tsconfig ./tsconfig.json --additional-properties true",
         "key-config-schema": "ts-json-schema-generator --path \"./src/**/*.ts\" --type ISpecialFunctionKeyConfig -o src/MainWindow/services/WebHmi/RendererComponents/Gamepad/SpecialFunctions/ISpecialFunctionKeyConfig.json --tsconfig ./tsconfig.json --additional-properties true",
         "macro-config-schema": "ts-json-schema-generator --path \"./src/**/*.ts\" --type ISpecialFunctionMacroConfig -o src/MainWindow/services/WebHmi/RendererComponents/Gamepad/SpecialFunctions/ISpecialFunctionMacroConfig.json --tsconfig ./tsconfig.json --additional-properties true",
         "hmi-config-schema": "ts-json-schema-generator --path \"./src/**/*.ts\" --type IHmiConfigurationWithoutCommunicationChannel -o src/MainWindow/services/WebHmi/IHmiConfigurationWithoutCommunicationChannel.json --tsconfig ./tsconfig.json --additional-properties true",
         "gamepad-config-schema": "ts-json-schema-generator --path \"./src/**/*.ts\" --type IWebGamepadConfig -o src/MainWindow/services/WebHmi/RendererComponents/Gamepad/IWebGamepadConfig.json --tsconfig ./tsconfig.json --additional-properties true",
-        "create-config-schemata": "npm run hmi-config-schema && npm run gamepad-config-schema && npm run key-config-schema && npm run macro-config-schema",
+        "create-config-schemata": "npm run hmi-config-schema && npm run gamepad-config-schema && npm run key-config-schema && npm run macro-config-schema && npm run connection-change-config-schema",
         "before-build": "sort-package-json && npm run create-config-schemata  && npm run lint",
         "prestart": "npm run before-build",
         "start": "electron-forge start",

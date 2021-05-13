@@ -27,8 +27,12 @@ export class MainWindowLoader implements ISendMessagesToGui {
         this.mainWindow.loadURL(mainWindowLocation);
 
         // Emitted before the window is closed.
-        this.mainWindow.on('close', async () => {
-            await this.disposeCurrentCoreInstane().then(() => (this.mainWindow = undefined));
+        this.mainWindow.on('close', (event) => {
+            if (this.core === undefined) {
+                return;
+            }
+            this.disposeCurrentCoreInstane().then(() => this.mainWindow.close());
+            event.preventDefault();
         });
 
         // Emitted after the window is closed.
