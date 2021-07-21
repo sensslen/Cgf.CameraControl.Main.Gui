@@ -1,6 +1,5 @@
 import { IHmiConfiguration } from '../../IHmiConfiguration';
-import { ISpecialFunctionKeyConfig } from './SpecialFunctions/ISpecialFunctionKeyConfig';
-import { ISpecialFunctionMacroConfig } from './SpecialFunctions/ISpecialFunctionMacroConfig';
+import { ISpecialFunctionDefinition } from './SpecialFunctions/ISpecialFunctionDefinition';
 
 export enum EButtonDirection {
     up = 'up',
@@ -17,8 +16,8 @@ export interface IWebGamepadConfig extends IHmiConfiguration {
         altLower?: { [key in EButtonDirection]?: number };
     };
     specialFunction: {
-        default: { [key in EButtonDirection]?: ISpecialFunctionMacroConfig | ISpecialFunctionKeyConfig };
-        alt?: { [key in EButtonDirection]?: ISpecialFunctionMacroConfig | ISpecialFunctionKeyConfig };
-        altLower?: { [key in EButtonDirection]?: ISpecialFunctionMacroConfig | ISpecialFunctionKeyConfig };
+        default: { [key in EButtonDirection]?: ISpecialFunctionDefinition };
+        alt?: { [key in EButtonDirection]?: ISpecialFunctionDefinition };
+        altLower?: { [key in EButtonDirection]?: ISpecialFunctionDefinition };
     };
 }

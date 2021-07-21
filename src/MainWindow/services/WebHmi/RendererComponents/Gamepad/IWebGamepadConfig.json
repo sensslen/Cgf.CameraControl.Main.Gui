@@ -10,36 +10,13 @@
       ],
       "type": "string"
     },
-    "ISpecialFunctionKeyConfig": {
+    "ISpecialFunctionDefinition": {
       "properties": {
-        "index": {
-          "type": "number"
-        },
         "type": {
           "$ref": "#/definitions/ESpecialFunctionType"
         }
       },
       "required": [
-        "index",
-        "type"
-      ],
-      "type": "object"
-    },
-    "ISpecialFunctionMacroConfig": {
-      "properties": {
-        "indexes": {
-          "items": {
-            "type": "number"
-          },
-          "minItems": 1,
-          "type": "array"
-        },
-        "type": {
-          "$ref": "#/definitions/ESpecialFunctionType"
-        }
-      },
-      "required": [
-        "indexes",
         "type"
       ],
       "type": "object"
@@ -123,44 +100,16 @@
               "additionalProperties": false,
               "properties": {
                 "down": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
-                    },
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
-                    }
-                  ]
+                  "$ref": "#/definitions/ISpecialFunctionDefinition"
                 },
                 "left": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
-                    },
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
-                    }
-                  ]
+                  "$ref": "#/definitions/ISpecialFunctionDefinition"
                 },
                 "right": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
-                    },
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
-                    }
-                  ]
+                  "$ref": "#/definitions/ISpecialFunctionDefinition"
                 },
                 "up": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
-                    },
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
-                    }
-                  ]
+                  "$ref": "#/definitions/ISpecialFunctionDefinition"
                 }
               },
               "type": "object"
@@ -169,44 +118,16 @@
               "additionalProperties": false,
               "properties": {
                 "down": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
-                    },
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
-                    }
-                  ]
+                  "$ref": "#/definitions/ISpecialFunctionDefinition"
                 },
                 "left": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
-                    },
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
-                    }
-                  ]
+                  "$ref": "#/definitions/ISpecialFunctionDefinition"
                 },
                 "right": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
-                    },
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
-                    }
-                  ]
+                  "$ref": "#/definitions/ISpecialFunctionDefinition"
                 },
                 "up": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
-                    },
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
-                    }
-                  ]
+                  "$ref": "#/definitions/ISpecialFunctionDefinition"
                 }
               },
               "type": "object"
@@ -215,44 +136,16 @@
               "additionalProperties": false,
               "properties": {
                 "down": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
-                    },
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
-                    }
-                  ]
+                  "$ref": "#/definitions/ISpecialFunctionDefinition"
                 },
                 "left": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
-                    },
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
-                    }
-                  ]
+                  "$ref": "#/definitions/ISpecialFunctionDefinition"
                 },
                 "right": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
-                    },
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
-                    }
-                  ]
+                  "$ref": "#/definitions/ISpecialFunctionDefinition"
                 },
                 "up": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionMacroConfig"
-                    },
-                    {
-                      "$ref": "#/definitions/ISpecialFunctionKeyConfig"
-                    }
-                  ]
+                  "$ref": "#/definitions/ISpecialFunctionDefinition"
                 }
               },
               "type": "object"
