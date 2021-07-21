@@ -1,9 +1,9 @@
-import Ajv, { Schema } from 'ajv';
+import ajv from 'ajv/lib/ajv';
 
 export class ConfigValidator {
-    private _ajv = new Ajv();
+    private _ajv = new ajv();
 
-    validate<TExpected>(config: unknown, schema: Schema | string): TExpected | undefined {
+    public validate<TExpected>(config: unknown, schema: string | { [key: string]: unknown }): TExpected | undefined {
         if (this._ajv.validate(schema, config)) {
             return config as TExpected;
         } else {
@@ -11,7 +11,7 @@ export class ConfigValidator {
         }
     }
 
-    errorGet(): string {
+    public errorGet(): string {
         return this._ajv.errorsText();
     }
 }

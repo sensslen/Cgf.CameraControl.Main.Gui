@@ -99,8 +99,8 @@
         }
     },
     "dependencies": {
-        "ajv": "^8.6.2",
-        "cgf.cameracontrol.main.core": "^1.0.6",
+        "ajv": "^6.9.1",
+        "cgf.cameracontrol.main.core": "^1.0.7",
         "electron-squirrel-startup": "^1.0.0",
         "eslint-import-resolver-webpack": "^0.13.1",
         "react": "^17.0.2",
@@ -116,12 +116,12 @@
         "@electron-forge/maker-squirrel": "^6.0.0-beta.58",
         "@electron-forge/maker-zip": "^6.0.0-beta.58",
         "@electron-forge/plugin-webpack": "^6.0.0-beta.58",
-        "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
         "@types/react": "^17.0.14",
         "@types/react-dom": "^17.0.9",
         "@types/styled-components": "^5.1.11",
         "@typescript-eslint/eslint-plugin": "^4.28.4",
         "@typescript-eslint/parser": "^4.28.4",
+        "@vercel/webpack-asset-relocator-loader": "1.6.0",
         "copy-webpack-plugin": "^9.0.1",
         "css-loader": "^6.2.0",
         "electron": "13.1.7",
@@ -137,7 +137,7 @@
         "semver": "^7.3.5",
         "simple-git": "^2.41.1",
         "sort-package-json": "^1.50.0",
-        "style-loader": "^3.1.0",
+        "style-loader": "^3.2.1",
         "ts-json-schema-generator": "^0.94.0",
         "ts-loader": "^9.2.3",
         "typescript": "^4.3.5"
