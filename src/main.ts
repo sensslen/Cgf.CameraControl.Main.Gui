@@ -1,5 +1,4 @@
 import { BrowserWindow, app } from 'electron';
-
 import { MainWindowLoader } from './MainWindow/MainWindowLoader';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;

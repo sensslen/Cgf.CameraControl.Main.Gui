@@ -67,7 +67,9 @@ export class MainWindowLoader implements ISendMessagesToGui {
     }
 
     private registerForUiEvents() {
-        ipcMain.on(IpcChannelConstants.loadConfiguration, () => this.showLoadConfigDialog());
+        ipcMain.on(IpcChannelConstants.loadConfiguration, () =>
+            this.showLoadConfigDialog().catch((error) => console.error(error))
+        );
         ipcMain.on(IpcChannelConstants.log, (_event, log: ILogMessage) => this.sendLogToGui(log.type, log.message));
     }
 
@@ -78,7 +80,7 @@ export class MainWindowLoader implements ISendMessagesToGui {
                 submenu: [
                     {
                         label: 'Load Configuration',
-                        click: () => this.showLoadConfigDialog(),
+                        click: () => this.showLoadConfigDialog().catch((error) => console.error(error)),
                     },
                     { role: 'forceReload' },
                     { role: 'toggleDevTools' },
@@ -95,7 +97,7 @@ export class MainWindowLoader implements ISendMessagesToGui {
                 filters: [{ name: 'JSON Files', extensions: ['json'] }],
             });
             if (!openComplete.canceled) {
-                this.loadConfig(openComplete.filePaths[0]);
+                await this.loadConfig(openComplete.filePaths[0]);
             }
         } catch (error) {
             console.error(error);
@@ -127,7 +129,7 @@ export class MainWindowLoader implements ISendMessagesToGui {
         await this.core.hmiFactory.builderAdd(new HmiBuilder(logger, this.core.mixerFactory, this), logger);
 
         const config = JSON.parse(fs.readFileSync(filepath).toString());
-        this.core.bootstrap(logger, config);
+        await this.core.bootstrap(logger, config);
     }
 
     private sendLogToGui(type: ELogType, message: string) {
